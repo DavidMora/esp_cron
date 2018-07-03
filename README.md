@@ -112,7 +112,7 @@ Sample callback:
 ```C
 void test_cron_job_sample_callback(cron_job *job)
 {
-  /* DO YOUR TASK IN HERE */
+  /* DO YOUR WORK IN HERE */
 return;
 }
 ```
