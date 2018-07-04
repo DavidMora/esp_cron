@@ -4,9 +4,9 @@ This is a cron-like clone for the esp-idf framework. It uses cron-like sytanx an
 
 ## How to use
 
-We tried to keep functions modules at minimum there is a creator, a destroyer a cron module starter and a cron module stopper. The workflow would be to define at least one job and then start the module. Then create and destroy jobs as desired. Keep in mind that if there are no jobs to be scheduled the cron module will stop itself.
+We tried to keep module functions interface at minimum there is a creator, a destroyer a cron module starter and a cron module stopper. The workflow would be to define at least one job and then start the module. Then create and destroy jobs as desired. Keep in mind that if there are no jobs to be scheduled the cron module will stop itself, this is by design as we don't want to waste cpu time.
 
-Please keep in mind that this module relies heavilly on the time.h library. **Time has to be initialized before any job creation.** The library time.h can be set manually or with another component like sntp, but it must have started before to this module usage.
+Please remember that this module relies heavilly on the time.h library. **Time has to be initialized before any job creation.** The library time.h can be set manually or with another component like sntp, but it must have started before to this module is in use. This component will not perform any checks to idetify if time has been set.
 
 ### Create
 
