@@ -19,6 +19,7 @@
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_log.h"
 #include "cron.h"
 #include "jobs.h"
 
@@ -169,7 +170,14 @@ int cron_job_load_expression(cron_job *job, const char * schedule)
   {
     memset(&(job->expression), 0, sizeof(job->expression));
     cron_parse_expr(schedule, &(job->expression), &error);
-    job->load = &(job->expression);
+
+    if(error != NULL){
+        ESP_LOGE(__func__, "Error parsing cron rule: %s with error: %s", schedule, error);
+        return -1;
+    }
+    else {
+        job->load = &(job->expression);
+    }
   }
   return 0;
 }
