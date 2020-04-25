@@ -2,16 +2,21 @@
 
 This is a cron-like clone for the esp-idf framework. It uses cron-like sytanx and time libraries included in newlib (esp-idf framework) for task scheduling.
 
+## How to clone
+
+To clone this module you need to do it recursively.
+
+After you add the submodule you should run `git submodule update --init --recursive`
+
 ## How to use
 
-We tried to keep module functions interface at minimum there is a creator, a destroyer a cron module starter and a cron module stopper. The workflow would be to define at least one job and then start the module. Then create and destroy jobs as desired. Keep in mind that if there are no jobs to be scheduled the cron module will stop itself, this is by design as we don't want to waste cpu time.
+We tried to keep functions modules at minimum there is a creator, a destroyer a cron module starter and a cron module stopper. The workflow would be to define at least one job and then start the module. Then create and destroy jobs as desired. Keep in mind that if there are no jobs to be scheduled the cron module will stop itself.
 
-Please remember that this module relies heavilly on the time.h library. **Time has to be initialized before any job creation.** The library time.h can be set manually or with another component like sntp, but it must have started before to this module is in use. This component will not perform any checks to idetify if time has been set.
+Please keep in mind that this module relies heavilly on the time.h library. **Time has to be initialized before any job creation.** The library time.h can be set manually or with another component like sntp, but it must have started before to this module usage.
 
 ### Create
 
-Usage is pretty simple, we provided a component factory for cron-job creation. 
-
+Usage is pretty simple, we provided a component factory for cron-job creation. Please note that `cron_job_create()` will call `cron_start()` if the module is not running
 
 ```C
 cron_job *cron_job_create(const char *schedule, cron_job_callback callback, void *data)
@@ -73,7 +78,7 @@ int cron_stop();
 
 ### Clearing all jobs a.k.a destroying all jobs
 
-We defined a helper to stop all cron jobs, we think it might be useful in some situations
+We defined a helper to stop all cron jobs, we think it might be useful in some situations. This function calls `cron_stop()`
 
 ```C
 int cron_job_clear_all();

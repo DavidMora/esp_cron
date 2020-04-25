@@ -22,6 +22,8 @@
 #include <time.h>
 #include "cron.h"
 
+// LINKED LIST JOB STRUCTURE
+
 struct cron_job_node {
   struct cron_job_node * next;
   cron_job * job;
@@ -64,14 +66,25 @@ int cron_job_list_remove(int id);
 *  RETURNS: number of nodes on list
 */
 int cron_job_node_count();
+
 /*
 *  SUMMARY: initializes the needed structures for the module to work (like mutex). It is safe to call it multiple times.
 *
 *  PARAMS: NONE
 *
+*  RETURNS:zero on success
+*/
+int cron_job_list_init();
+
+/*
+*  SUMMARY: Remove initialized vars of the module for testing proupose
+*
+*  PARAMS: NONE
+*
 *  RETURNS:none
 */
-void cron_job_list_init();
+void cron_job_list_dinit();
+
 /*
 *  SUMMARY: If the node count is zero then make id 0 to start over.
 *

@@ -26,6 +26,25 @@
 
 
 /*
+* ENUM WITH CRON ERRORS
+*/
+
+enum cron_job_errors {
+  Cron_bad_id=-1000,
+  Cron_parse_expresion_error,
+  Cron_bad_schedule,
+  Cron_error_in_load_expression,
+  Cron_expresion_not_loaded,
+  Cron_unable_to_create_secheduler_task,
+  Cron_no_sempahore,
+  Cron_bad_job,
+  Cron_scheduler_task_handle_set_but_stopped,
+  Cron_not_stopped,
+  Cron_is_stopped,
+  Cron_fail=-1,
+  Cron_ok=0
+};
+/*
 *  STRUCT INFORMATION: Holds the information needed to run the cron job.
 *  
 *  - callback: Function pointer to be called on execution
@@ -63,10 +82,26 @@ struct cron_job_struct
 
 // FUNCTION POINTER TO CALLBACKS
 typedef void (*cron_job_callback)(cron_job *);
+/*
+*  SUMARY: Allocates a cron job on the heap with supplied parameters, if cron is not running, it will call cron_start()
+*  
+*  PARAMS: CRON SYNTAX SCHEDULE, CALLBACK (JOB), DATA FOR THE CALLBACK
+*
+*  RETURNS: heap allocated cron_job
+*/
+void cron_job_init();
+/*
+*  SUMARY: Tells wether the cron scheduler is currently running
+*  
+*  PARAMS: none
+*
+*  RETURNS: 1 on running, 0 otherwise
+*/
 
+int cron_job_is_running();
 
 /*
-*  SUMARY: Allocates a cron job on the heap with supplied parameters
+*  SUMARY: Allocates a cron job on the heap with supplied parameters, if cron is not running, it will call cron_start()
 *  
 *  PARAMS: CRON SYNTAX SCHEDULE, CALLBACK (JOB), DATA FOR THE CALLBACK
 *
@@ -83,7 +118,7 @@ cron_job * cron_job_create(const char * schedule,cron_job_callback callback, voi
 *  RETURNS: heap allocated cron_job
 */
 
-int cron_job_destroy(cron_job * job);
+enum cron_job_errors cron_job_destroy(cron_job * job);
 
 
 /*
@@ -91,26 +126,26 @@ int cron_job_destroy(cron_job * job);
 *
 *  PARAMS: removes all cron_jobs (no deallocation is performed by the call, memory must be handled out of this module)
 *
-*  RETURNS:  0 on success
+*  RETURNS:  cron_job_errors enum constant  for error checking
 */
 
-int cron_job_clear_all();
+enum cron_job_errors cron_job_clear_all();
 
 /*
 *  SUMMARY: Starts the schedule module (creates a new task on the operating system)
 *
-*  RETURNS:  0 on success
+*  RETURNS:   cron_job_errors enum constant  for error checking
 */
 
-int cron_start();
+enum cron_job_errors cron_start();
 
 /*
 *  SUMMARY: Stops the schedule module (deletes the cron task on the operating system)
 *
-*  RETURNS:  0 on success
+*  RETURNS:   cron_job_errors enum constant  for error checking
 */
 
-int cron_stop();
+enum cron_job_errors cron_stop();
 
 
 /*
@@ -118,21 +153,21 @@ int cron_stop();
 *
 *  PARAMS: cron_job to be scheduled (no allocation is performed by the call, memory must be handled out of this module)
 *
-*  RETURNS:  0 on success
+*  RETURNS:   cron_job_errors enum constant  for error checking
 */
 
 
-int cron_job_schedule(cron_job * job);
+enum cron_job_errors cron_job_schedule(cron_job * job);
 
 /*
 *  SUMMARY: Removes a cron_job from the schedule, this is ID based
 *
 *  PARAMS: cron_job to be removed (no deallocation is performed by the call, memory must be handled out of this module)
 *
-*  RETURNS:  0 on success, -1 on job NULL, -2 on JOB not loaded
+*  RETURNS:   cron_job_errors enum constant  for error checking
 */
 
-int cron_job_unschedule(cron_job * job);
+enum cron_job_errors cron_job_unschedule(cron_job * job);
 
 
 
@@ -160,24 +195,31 @@ void cron_schedule_task(void *args);
 *
 *  RETURNS: NO RETURN
 */
-int cron_job_load_expression(cron_job *job, const char * schedule);
+enum cron_job_errors cron_job_load_expression(cron_job *job, const char * schedule);
 /*
 *  SUMARY: Checks if load expression has loaded
 *  
 *  PARAMS: Cron job structure
 *
-*  RETURNS: 1 if it has loaded, 0 on error
+*  RETURNS:  cron_job_errors enum constant  for error checking
 */
-int cron_job_has_loaded(cron_job *job);
+enum cron_job_errors cron_job_has_loaded(cron_job *job);
 /*
 *  SUMARY: Returns seconds until next execution
 *  
 *  PARAMS: NONE
 *
-*  RETURNS: seconds until next execution
+*  RETURNS: cron_job_errors enum constant  for error checking
 */
 time_t cron_job_seconds_until_next_execution();
 
-
-
+/*
+*  SUMARY: Sort the cron list 
+*  
+*  PARAMS: NONE
+*
+*  RETURNS:  cron_job_errors enum constant  for error checking
+*/
+enum cron_job_errors cron_job_sort();
 #endif
+
