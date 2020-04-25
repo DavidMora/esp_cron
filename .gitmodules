@@ -1,0 +1,3 @@
+[submodule "library/ccronexpr"]
+	path = library/ccronexpr
+	url = https://github.com/staticlibs/ccronexpr.git
