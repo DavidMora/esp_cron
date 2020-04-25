@@ -36,13 +36,25 @@ static struct
     .semaphore = NULL,
     .init = 0
     };
-
-void cron_job_list_init()
+void cron_job_list_dinit(){
+  linked_link_state.init = 0;
+  linked_link_state.next_id = 0;
+  struct cron_job_node * node = cron_job_list_first();
+  while(node){
+    cron_job_list_remove(node->job->id);
+    node = cron_job_list_first();
+  }
+  linked_link_state.first = NULL;
+  linked_link_state.semaphore = NULL;
+}
+int cron_job_list_init()
 {
   if (linked_link_state.init == 0) {
     linked_link_state.semaphore = xSemaphoreCreateMutex();
     linked_link_state.init=1;
+    return 0;
   }
+  return -1;
 }
 
 struct cron_job_node *cron_job_list_first()
@@ -70,16 +82,14 @@ int cron_job_list_insert(cron_job *job)
   if (linked_link_state.semaphore == NULL)
     cron_job_list_init();
   if (job == NULL)
-  {
     return -1;
-  }
   struct cron_job_node *new_node = calloc(sizeof(struct cron_job_node),1);
   if (new_node == NULL)
   {
     return -1;
   }
   new_node->job = job;
-  if (xSemaphoreTake(linked_link_state.semaphore, (TickType_t)10) == pdTRUE)
+  if (xSemaphoreTake(linked_link_state.semaphore, (TickType_t)100) == pdTRUE)
   {
     linked_link_state.first = _cron_job_list_insert(linked_link_state.first, new_node);
     xSemaphoreGive(linked_link_state.semaphore);
@@ -96,11 +106,11 @@ int cron_job_list_insert(cron_job *job)
 
 int cron_job_list_remove(int id)
 {
-  int ret = -1;
+  int ret = -5;
   struct cron_job_node *node = linked_link_state.first, *prev_node = NULL;
-  if (xSemaphoreTake(linked_link_state.semaphore, (TickType_t)10) == pdTRUE) 
+  if (xSemaphoreTake(linked_link_state.semaphore, (TickType_t)100) == pdTRUE)
   {
-    do
+    while (node)
     {
       if (node->job->id == id)
       {
@@ -114,7 +124,6 @@ int cron_job_list_remove(int id)
         }
         free(node);
         node = NULL;
-
         ret = 0;
         break;
       }
@@ -123,8 +132,7 @@ int cron_job_list_remove(int id)
         prev_node = node;
         node = node->next;
       }
-
-    } while (node->next);
+    }
     xSemaphoreGive(linked_link_state.semaphore);
   }
   else
@@ -154,10 +162,11 @@ int cron_job_node_count()
 }
 
 
-int cron_job_list_reset_id(){
+int cron_job_list_reset_id()
+{
   if (cron_job_node_count()==0) {
     linked_link_state.next_id=0;
     return 0;
-    }
+  }
   return -1;
 }
