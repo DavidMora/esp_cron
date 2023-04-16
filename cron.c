@@ -109,7 +109,7 @@ int cron_start()
       4096,                 /* Stack size in words, not bytes. */
       (void *)0,            /* Parameter passed into the task. */
       tskIDLE_PRIORITY + 2, /* Priority at which the task is created. */
-      NULL,                  /* NO NEED FOR THE HANDLE! I GOT IT IN STATE. */
+      &state.handle,        /* Save handle for further task delete. */
       tskNO_AFFINITY);      /* NO SPECIFIC CORE */
   if (xReturned != pdPASS)
   {
