@@ -36,7 +36,8 @@ extern "C" {
 
 #include <stdint.h> /*added for use if uint*_t data types*/
 
-/**
+
+    /**
  * Parsed cron expression
  */
 typedef struct {
